@@ -5,6 +5,8 @@ using Microsoft.ML.OnnxRuntime.Tensors;
 using System;
 using System.Buffers;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Microsoft.ML.OnnxRuntime
 {
@@ -38,11 +40,27 @@ namespace Microsoft.ML.OnnxRuntime
         /// <summary>
         /// Managed Tensor, Dictionary or IList
         /// </summary>
-        protected Object _value;
+        private Object _value;
         /// <summary>
         /// Name of the instance, model input/output
         /// </summary>
-        protected string _name;
+        private string _name;
+
+        /// <summary>
+        /// The class holds keys and values for the dictionary
+        /// </summary>
+        private class MapHelper
+        {
+            internal MapHelper(object keys, object values)
+            {
+                Keys = keys;
+                Values = values;
+            }
+            internal Object Keys { get; }   // DenseTensor<K>
+            internal Object Values { get; } // DenseTensor<V>
+        }
+
+        private MapHelper _mapHelper; // used for maps, otherwise null
 
         /// <summary>
         /// Constructs an instance of NamedOnnxValue and represents
@@ -63,6 +81,14 @@ namespace Microsoft.ML.OnnxRuntime
             _name = name;
             _value = value;
             ValueType = valueType;
+        }
+
+        private NamedOnnxValue(string name, Object value, MapHelper helper)
+        {
+            _name = name;
+            _value = value;
+            ValueType = OnnxValueType.ONNX_TYPE_MAP;
+            _mapHelper = helper;
         }
 
         /// <summary>
@@ -100,15 +126,23 @@ namespace Microsoft.ML.OnnxRuntime
         /// <summary>
         /// This is a factory method that instantiates NamedOnnxValue.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="K">Keys type</typeparam>
+        /// <typeparam name="V">Values type</typeparam>
         /// <param name="name"></param>
         /// <param name="value"></param>
-        /// <returns></returns>
-        //public static NamedOnnxValue CreateFromMap<K, V>(string name, IDictionary<K, V> value)
-        //{
-        //    return new NamedOnnxValue(name, value, OnnxValueType.ONNX_TYPE_MAP);
-        //}
+        /// <returns>new instance of NamedOnnxValue</returns>
+        public static NamedOnnxValue CreateFromMap<K, V>(string name, IDictionary<K, V> value)
+        {
+            // The order in which Keys and Values are unspecified,
+            // but it is guaranteed to be the same order
+            // These tensors are 1-D
+            var keysMemory = new Memory<K>(value.Keys.ToArray<K>());
+            var keysTensor = new DenseTensor<K>(keysMemory, new int[1] { keysMemory.Length });
+
+            var valuesMemory = new Memory<V>(value.Values.ToArray<V>());
+            var valuesTensor = new DenseTensor<V>(valuesMemory, new int[1] { valuesMemory.Length });
+            return new NamedOnnxValue(name, value, new MapHelper(keysTensor, valuesTensor));
+        }
 
         /// <summary>
         /// Exposes the name of the of the model input/output
@@ -166,6 +200,39 @@ namespace Microsoft.ML.OnnxRuntime
                 out _);
             memoryOwner = memoryHandle;
             return ortValue;
+        }
+
+        /// <summary>
+        /// This method is used internally to feed dictionary keys
+        /// to create an OrtValue for map keys
+        /// </summary>
+        /// <typeparam name="K"></typeparam>
+        /// <returns>DenseTensor<K>"</returns>
+        internal Object GetDictionaryKeys()
+        {
+            if(ValueType != OnnxValueType.ONNX_TYPE_MAP)
+            {
+                throw new OnnxRuntimeException(ErrorCode.Fail, "This NamedOnnxValue instance does not contain a dictionary");
+            }
+
+            Debug.Assert(_mapHelper != null);
+            return _mapHelper.Keys;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="V"></typeparam>
+        /// <returns>DenseTensor<V>"</returns>
+        internal Object GetDictionaryValues()
+        {
+            if (ValueType != OnnxValueType.ONNX_TYPE_MAP)
+            {
+                throw new OnnxRuntimeException(ErrorCode.Fail, "This NamedOnnxValue instance does not contain a dictionary");
+            }
+
+            Debug.Assert(_mapHelper != null);
+            return _mapHelper.Values;
         }
 
         // may expose different types of getters in future

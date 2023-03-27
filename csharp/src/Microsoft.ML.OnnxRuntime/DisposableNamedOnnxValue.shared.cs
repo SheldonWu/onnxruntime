@@ -118,7 +118,7 @@ namespace Microsoft.ML.OnnxRuntime
         /// <param name="name">name of the value</param>
         /// <param name="ortValue">underlying OrtValue</param>
         /// <returns></returns>
-        internal static DisposableNamedOnnxValue CreateTensorFromOnnxValue(string name, OrtValue ortValue)
+        private static DisposableNamedOnnxValue CreateTensorFromOnnxValue(string name, OrtValue ortValue)
         {
             DisposableNamedOnnxValue result = null;
 
@@ -442,9 +442,7 @@ namespace Microsoft.ML.OnnxRuntime
         /// </summary>
         public void Dispose()
         {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            GC.SuppressFinalize(this);
         }
         #endregion
 
