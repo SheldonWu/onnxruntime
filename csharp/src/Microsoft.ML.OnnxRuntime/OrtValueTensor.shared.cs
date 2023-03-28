@@ -23,13 +23,14 @@ namespace Microsoft.ML.OnnxRuntime
     /// This class is used in conjunction with DisposableNamedOnnxValue to 
     /// own native collection OrtValue and dispose of it along with any DisposableNamedOnnxValues
     /// </summary>
-    internal class NativeOrtValueCollectionOwner : IOrtValueOwner, IDisposable
+    internal class NativeOrtValueCollectionOwner<T> : IOrtValueOwner, IDisposable
+        where T:IDisposable
     {
         private OrtValue _ortValue;
-        private DisposableList<DisposableNamedOnnxValue> _disposables;
+        private DisposableList<T> _disposables;
         bool _disposed = false;
 
-        internal NativeOrtValueCollectionOwner(OrtValue ortValue, DisposableList<DisposableNamedOnnxValue> disposables)
+        internal NativeOrtValueCollectionOwner(OrtValue ortValue, DisposableList<T> disposables)
         {
             Debug.Assert(ortValue.IsOwned);
             _ortValue = new OrtValue(ortValue.Disown());
@@ -83,6 +84,8 @@ namespace Microsoft.ML.OnnxRuntime
     /// 
     /// It is easy to expose as a Tensor<T> as DenseTensor can take Memory Mapping from
     /// this.
+    /// 
+    /// This class is disposable because of the MemoryManager inheritance
     /// </summary>
     /// <typeparam name="T"></typeparam>
     internal class OrtValueTensor<T> : MemoryManager<T>, IOrtValueOwner

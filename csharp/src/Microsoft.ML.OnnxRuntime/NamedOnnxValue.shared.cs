@@ -11,6 +11,20 @@ using System.Linq;
 namespace Microsoft.ML.OnnxRuntime
 {
     /// <summary>
+    /// The class holds keys and values for the dictionary
+    /// </summary>
+    internal class MapHelper
+    {
+        internal MapHelper(object keys, object values)
+        {
+            Keys = keys;
+            Values = values;
+        }
+        internal Object Keys { get; }   // DenseTensor<K>
+        internal Object Values { get; } // DenseTensor<V>
+    }
+
+    /// <summary>
     /// The class associates a name with an Object. 
     /// The name of the class is a misnomer, it does not hold any Onnx values,
     /// just managed representation of them.
@@ -46,20 +60,6 @@ namespace Microsoft.ML.OnnxRuntime
         /// </summary>
         private string _name;
 
-        /// <summary>
-        /// The class holds keys and values for the dictionary
-        /// </summary>
-        private class MapHelper
-        {
-            internal MapHelper(object keys, object values)
-            {
-                Keys = keys;
-                Values = values;
-            }
-            internal Object Keys { get; }   // DenseTensor<K>
-            internal Object Values { get; } // DenseTensor<V>
-        }
-
         private MapHelper _mapHelper; // used for maps, otherwise null
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace Microsoft.ML.OnnxRuntime
             ValueType = valueType;
         }
 
-        private NamedOnnxValue(string name, Object value, MapHelper helper)
+        internal NamedOnnxValue(string name, Object value, MapHelper helper)
         {
             _name = name;
             _value = value;
