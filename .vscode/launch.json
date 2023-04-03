@@ -1,0 +1,21 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: build scripts",
+            "python": "${command:python.interpreterPath}",
+            "type": "python",
+            "request": "launch",
+            "program": "/workspace/onnxruntime/tools/ci_build/build.py",
+            "console": "integratedTerminal",
+            //"env": {"CUDA_VISIBLE_DEVICES":"0,1"},
+            "args": ["--build_dir", "/workspace/onnxruntime/build/Linux","--skip_submodule_sync",
+            "--config", "RelWithDebInfo",
+            "--build_shared_lib", "--parallel"],
+            "justMyCode": true
+        }
+    ]
+}

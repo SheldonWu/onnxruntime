@@ -1,25 +1,10 @@
-#!/usr/bin/env bash
-#
-# SPDX-FileCopyrightText: Copyright (c) 1993-2022 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 
-arg_tag=ubuntu18.04
+arg_tag=ubuntu1804:ort_dev
 arg_gpus=all
 arg_jupyter=0
 arg_help=0
+
+
 
 while [[ "$#" -gt 0 ]]; do case $1 in
   --tag) arg_tag="$2"; shift;;
@@ -47,12 +32,13 @@ if [ "$arg_jupyter" -ne "0" ]; then
     extra_args+=" -p $arg_jupyter:$arg_jupyter"
 fi
 
-docker_args="$extra_args -v ${PWD}/../onnxruntime:/workspace -v ${PWD}/../model:/workspace --rm -it $arg_tag"
+docker_args="$extra_args -v ${PWD}/..:/workspace -d --rm -it "
 
 if [ "$arg_jupyter" -ne "0" ]; then
     docker_args+=" jupyter-lab --port=$arg_jupyter --no-browser -p 8011:22 --ip 0.0.0.0 --allow-root"
 fi
 
 echo "Launching container:"
-echo "> docker run $docker_args"
-nvidia-docker run $docker_args
+# echo "> docker run $docker_args"
+echo "> docker run $arg_tag"
+nvidia-docker run  -p 8011:22 --ip 0.0.0.0 $docker_args $arg_tag
