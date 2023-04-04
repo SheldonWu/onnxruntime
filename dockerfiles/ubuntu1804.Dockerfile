@@ -65,8 +65,9 @@ RUN /etc/init.d/ssh restart
 # ENV TRT_MODELDIR /workspace/model
 # ENV TRT_DATADIR /workspace/data
 # ENV PATH="${PATH}:/usr/local/bin/ngc-cli"
-# ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TRT_OSSPATH}/build/out:${TRT_LIBPATH}"
-WORKDIR /workspace
+#ENV LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:${TRT_OSSPATH}/build/out:${TRT_LIBPATH}
+ENV _OSSPATH /workspace/onnxruntime
+ENV LD_LIBRARY_PATH=/usr/lib/x86_64-linux-gnu/:${OSS_PATH}/build/Linux:${LD_LIBRARY_PATHTRT_OSSPATH /workspace/TensorRTWORKDIR /workspace
 
 # Build
 # C++
