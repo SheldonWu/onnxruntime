@@ -19,6 +19,8 @@ else()
   target_sources(fns_candy_style_transfer PRIVATE image_file_libpng.c)
 endif()
 target_include_directories(fns_candy_style_transfer PRIVATE ${PROJECT_SOURCE_DIR}/include ${PNG_INCLUDE_DIRS})
+
+
 target_link_libraries(fns_candy_style_transfer PRIVATE onnxruntime ${PNG_LIBRARIES} ${WIL_LIB})
 if(PNG_LIBDIR)
   target_link_directories(fns_candy_style_transfer PRIVATE ${PNG_LIBDIR})

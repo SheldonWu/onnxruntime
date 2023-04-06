@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.24)
 
 set(CMAKE_CXX_STANDARD 17)
+#set(BUILD_TYPE "Debug|RelWithDebInfo|Release")
+set(COMPILE_OPTIONS "")
 
 set(ORT_ROOTDIR "/workspace/onnxruntime")
 set(ORT_OUTDIR "${ORT_ROOTDIR}/build/Linux/RelWithDebInfo")
@@ -12,17 +14,35 @@ include_directories("${ORT_ROOTDIR}/include"                           # Pre-bui
 
 link_directories(${ORT_LIBDIR})
 
+
 if (WIN32)
- string(APPEND CMAKE_CXX_FLAGS " /W4")
+    message("Win32 ..")
+    string(APPEND COMPILE_OPTIONS " /W4")
 else()
- string(APPEND CMAKE_CXX_FLAGS " -Wall -Wextra")
- string(APPEND CMAKE_C_FLAGS " -Wall -Wextra")
+    string(APPEND COMPILE_OPTIONS " -Wall -Wextra ")
+    if (${BUILD_TYPE} STREQUAL "Debug")
+        string(APPEND COMPILE_OPTIONS " -g -O0")
+    elseif (${BUILD_TYPE} STREQUAL "Release")
+        string(APPEND COMPILE_OPTIONS " -O3 -DNDEBUG")
+    elseif (${BUILD_TYPE} STREQUAL "RelWithDebInfo")
+        string(APPEND COMPILE_OPTIONS " -O0 -DNDEBUG")
+    endif()
 endif()
+
+string(APPEND CMAKE_CXX_FLAGS ${COMPILE_OPTIONS})
+string(APPEND CMAKE_C_FLAGS ${COMPILE_OPTIONS})
+message("CMAKE_CXX_FLAGS:" ${CMAKE_CXX_FLAGS})
+
 
 # static library
 #set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 #set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ORT_OUTDIR})
+
+
+#if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+#elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+#endif()
 
 
 #if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
