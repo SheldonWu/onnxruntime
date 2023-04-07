@@ -54,10 +54,20 @@ RUN apt-get install -y --no-install-recommends \
     python3-numpy \
     aria2 && aria2c -q -d /tmp -o cmake-3.24.3-linux-x86_64.tar.gz https://github.com/Kitware/CMake/releases/download/v3.24.3/cmake-3.24.3-linux-x86_64.tar.gz && tar -zxf /tmp/cmake-3.24.3-linux-x86_64.tar.gz --strip=1 -C /usr
 
+
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt install -yq python3.10
+RUN git clone https://github.com/pypa/setuptools.git && cd setuptools && sudo python3.10 setup.py install
+RUN apt install -yq python3.10-distutils
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
+RUN apt install -yq python3.10-venv python3.10-dev
+
+RUN python3 -m pip install pillow numpy
+
 RUN /etc/init.d/ssh restart
 # ADD . /code
 # # Prepare onnxruntime repository & build onnxruntime
-# RUN cd /code && /bin/bash ./build.sh --skip_submodule_sync --config Release --build_wheel --update --build --parallel --cmake_extra_defines ONNXRUNTIME_VERSION=$(cat ./VERSION_NUMBER) 
+# RUN cd /code && /bin/bash ./build.sh --skip_submodule_sync --config Release --build_wheel --update --build --parallel --cmake_extra_defines ONNXRUNTIME_VERSION=$(cat ./VERSION_NUMBER)
 
 # # Set environment and working directory
 # ENV TRT_LIBPATH /usr/lib/x86_64-linux-gnu

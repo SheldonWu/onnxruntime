@@ -22,7 +22,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "/workspace/onnxruntime/build/Linux/RelWithDebInfo/fns_candy_style_transfer",
-            "args": ["/workspace/model/candy.onnx", "/workspace/model/c001.png","/workspace/model/c001.out.png","cpu" ],
+            "args": ["/workspace/model/candy.onnx", "/workspace/model/c002_i.png","/workspace/model/c002_o.png","cpu" ],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
