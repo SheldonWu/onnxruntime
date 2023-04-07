@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.24)
 
 set(CMAKE_CXX_STANDARD 17)
-#set(BUILD_TYPE "Debug|RelWithDebInfo|Release")
-set(COMPILE_OPTIONS "")
+#set(CMAKE_BUILD_TYPE "Debug|RelWithDebInfo|Release")
 
 set(ORT_ROOTDIR "/workspace/onnxruntime")
 set(ORT_OUTDIR "${ORT_ROOTDIR}/build/Linux/RelWithDebInfo")
@@ -14,24 +13,13 @@ include_directories("${ORT_ROOTDIR}/include"                           # Pre-bui
 
 link_directories(${ORT_LIBDIR})
 
-
-if (WIN32)
-    message("Win32 ..")
-    string(APPEND COMPILE_OPTIONS " /W4")
-else()
-    string(APPEND COMPILE_OPTIONS " -Wall -Wextra ")
-    if (${BUILD_TYPE} STREQUAL "Debug")
-        string(APPEND COMPILE_OPTIONS " -g -O0")
-    elseif (${BUILD_TYPE} STREQUAL "Release")
-        string(APPEND COMPILE_OPTIONS " -O3 -DNDEBUG")
-    elseif (${BUILD_TYPE} STREQUAL "RelWithDebInfo")
-        string(APPEND COMPILE_OPTIONS " -O0 -DNDEBUG")
-    endif()
+# change default C/CXX flagas to make Debugging easy
+if (${CMAKE_BUILD_TYPE} STREQUAL "RelWithDebInfo")
+    message("Default " ${CMAKE_BUILD_TYPE} ":" ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
+    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO " -O0 -g -DNDEBUG")
+    set(CMAKE_C_FLAGS_RELWITHDEBINFO " -O0 -g -DNDEBUG")
+    message("Change to : " ${CMAKE_CXX_FLAGS_RELWITHDEBINFO})
 endif()
-
-string(APPEND CMAKE_CXX_FLAGS ${COMPILE_OPTIONS})
-string(APPEND CMAKE_C_FLAGS ${COMPILE_OPTIONS})
-message("CMAKE_CXX_FLAGS:" ${CMAKE_CXX_FLAGS})
 
 
 # static library
@@ -40,28 +28,6 @@ message("CMAKE_CXX_FLAGS:" ${CMAKE_CXX_FLAGS})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${ORT_OUTDIR})
 
 
-#if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-#endif()
-
-
-#if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-#    # using GCC
-#    set(CMAKE_VERBOSE_MAKEFILE 1)
-#    set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_DEFINITIONS "Bits64_;UNIX;_BOOL;LINUX;FUNCPROTO;_GNU_SOURCE;LINUX_64;REQUIRE_IOSTREAM")
-#    set(GCC_COMPILE_OPTIONS "-m64;-fPIC;-fno-strict-aliasing;-Wall;-Wno-multichar;-Wno-comment;-Wno-sign-compare;-funsigned-char;-pthread;-Wno-deprecated;-Wno-reorder;-ftemplate-depth-64;-fno-gnu-keywords;-std=c++0x;-Winline")
-#    set(GCC_COMPILE_DEBUG_OPTIONS "${GCC_COMPILE_OPTIONS};-ggdb;-O0")
-#    set(GCC_COMPILE_RELEASE_OPTIONS "${GCC_COMPILE_OPTIONS};-O3")
-#    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Debug>:${GCC_COMPILE_DEBUG_OPTIONS}>")
-#    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Release>:${GCC_COMPILE_RELEASE_OPTIONS}>")
-#elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
-    # using Visual Studio C++
-#    set(MSVC_COMPILE_OPTIONS "/MP;/W3;/w34710;/Gy;/Zc:wchar_t;/nologo;/std:c++0x /EHsc")
-#    set(MSVC_COMPILE_DEBUG_OPTIONS "${MSVC_COMPILE_OPTIONS} /ZI /Od")
-#    set(MSVC_COMPILE_RELEASE_OPTIONS "${MSVC_COMPILE_OPTIONS} /O2")
-#    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Debug>:${MSVC_COMPILE_DEBUG_OPTIONS}>")
-#    target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:Release>:${MSVC_COMPILE_RELEASE_OPTIONS}>")
-#endif()
 #if(onnxruntime_USE_CUDA)
 #  add_definitions(-DUSE_CUDA)
 #endif()

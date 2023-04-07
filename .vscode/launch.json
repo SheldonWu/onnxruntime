@@ -16,6 +16,27 @@
             "--config", "RelWithDebInfo",
             "--build_shared_lib", "--parallel"],
             "justMyCode": true
+        },
+        {
+            "name": "cxx-debug-sample",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/workspace/onnxruntime/build/Linux/RelWithDebInfo/fns_candy_style_transfer",
+            "args": ["/workspace/model/candy.onnx", "/workspace/model/c001.png","/workspace/model/c001.out.png","cpu" ],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "BuildSample",
+            "miDebuggerPath": "/usr/bin/gdb"
         }
     ]
 }
