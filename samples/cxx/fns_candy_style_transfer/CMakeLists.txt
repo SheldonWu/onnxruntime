@@ -17,16 +17,16 @@ else()
 endif()
 
 
-add_executable(${PROJECT_NAME}  "fns_candy_style_transfer.c" "image_file.h")
+add_executable(${PROJECT_NAME}  "fns_candy_style_transfer.c" "../common/image_file.h")
 if(WIN32)
   message("Win32 ...")
-  target_sources(${PROJECT_NAME}  PRIVATE image_file_wic.cc)
+  target_sources(${PROJECT_NAME}  PRIVATE "../common/image_file_wic.cc" "../common/image_common.c")
 else()
-  target_sources(${PROJECT_NAME}  PRIVATE image_file_libpng.c)
+  target_sources(${PROJECT_NAME}  PRIVATE "../common/image_file_libpng.c" "../common/image_common.c" )
   message("cCC ...")
 endif()
 
-target_include_directories(${PROJECT_NAME}  PRIVATE ${PROJECT_SOURCE_DIR}/include ${PNG_INCLUDE_DIRS})
+target_include_directories(${PROJECT_NAME}  PRIVATE ${PROJECT_SOURCE_DIR}/../common ${PNG_INCLUDE_DIRS})
 
 target_link_libraries(${PROJECT_NAME}  PRIVATE onnxruntime ${PNG_LIBRARIES} ${WIL_LIB})
 if(PNG_LIBDIR)
@@ -46,7 +46,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   target_compile_options(${PROJECT_NAME} PRIVATE "$<$<CONFIG:Release>:${GCC_COMPILE_OPTIONS}>")
   target_compile_options(${PROJECT_NAME} PUBLIC "$<$<CONFIG:RelWithDebInfo>:${GCC_COMPILE_OPTIONS}>")
   target_compile_options(${PROJECT_NAME} PRIVATE "$<$<CONFIG:RelWithDebInfo>:${GCC_COMPILE_OPTIONS}>")
-
 elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # using Visual Studio C++
   set(MSVC_COMPILE_OPTIONS "/MP;/W3;/w34710;/Gy;/Zc:wchar_t;/nologo;/std:c++0x /EHsc")

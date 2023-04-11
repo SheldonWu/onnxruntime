@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include "image_file.h"
 
+
 /**
  * convert input from HWC format to CHW format
  * \param input A single image. The byte array has length of 3*h*w

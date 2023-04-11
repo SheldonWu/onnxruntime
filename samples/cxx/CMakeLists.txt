@@ -9,6 +9,7 @@ project(ort_samples)
 
 set(OSS_SAMPLES_LIST
     fns_candy_style_transfer
+    mnist
     )
 
 foreach(SAMPLE_ITER ${OSS_SAMPLES_LIST})
